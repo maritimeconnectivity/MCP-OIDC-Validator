@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="js/oidc-client.min.js"></script>
+</head>
+<body>
+    <script>
+        new Oidc.UserManager({response_type: 'code'}).signinRedirectCallback(window.location.href).then(function (user) {
+            console.log(user);
+            window.location = "index.html";
+        }).catch(function (e) {
+            console.error(e);
+        });
+    </script>
+</body>
+</html>
