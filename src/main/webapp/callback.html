@@ -9,7 +9,7 @@
     <script>
         new Oidc.UserManager({response_type: 'code'}).signinRedirectCallback(window.location.href).then(function (user) {
             console.log(user);
-            window.location = "index.html";
+            window.location = "/";
         }).catch(function (e) {
             console.error(e);
         });
