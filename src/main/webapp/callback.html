@@ -7,8 +7,7 @@
 </head>
 <body>
     <script>
-        new Oidc.UserManager({response_type: 'code'}).signinRedirectCallback(window.location.href).then(function (user) {
-            console.log(user);
+        new Oidc.UserManager({response_type: 'code'}).signinRedirectCallback(window.location.href).then(function () {
             window.location = "/";
         }).catch(function (e) {
             console.error(e);
