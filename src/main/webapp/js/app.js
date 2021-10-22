@@ -25,7 +25,7 @@ if (!user) {
     });
     loginButton.hidden = true;
     validateButton.addEventListener('click', async () => {
-        console.log(user.profile);
+        user = await userManager.getUser();
         let response = await fetch('/api/validate', {
             method: 'GET',
             mode: 'cors',
@@ -33,6 +33,9 @@ if (!user) {
                 'Authorization': 'Bearer ' + user.access_token
             }
         });
-        console.log(response);
+        const status = response.status;
+        if (status === 200) {
+            alert(await response.text());
+        }
     });
 }

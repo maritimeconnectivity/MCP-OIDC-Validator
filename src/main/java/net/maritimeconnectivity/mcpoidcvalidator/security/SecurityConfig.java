@@ -13,7 +13,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests(authz -> authz
                         .antMatchers("/api/**").authenticated()
-                        .antMatchers("/**").permitAll())
+                        .anyRequest().permitAll())
                 .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
     }
 }
