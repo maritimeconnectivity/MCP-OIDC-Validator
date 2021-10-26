@@ -1,6 +1,7 @@
 const mrnPattern = /^urn:mrn:([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):([a-z0-9][-a-z0-9]{0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)((\?\+((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?(\?=((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?)?(#(((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?$/i;
 const mcpMrnPattern = /^urn:mrn:mcp:(device|org|user|vessel|service|mms|mir|msr):([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)$/i;
 const mmsiPattern = /^\d{9}$/;
+const imoNumberPattern = /^(IMO)?( )?\d{7}$/;
 const aisTypePattern = /^[AB]$/;
 const greenCheckMark = "\u2705";
 const redCheckMark = "\u274C";
@@ -33,6 +34,7 @@ const claims = ["uid", "flagstate", "callsign", "imo_number", "mmsi", "ais_type"
 
 const validators = {
     uid: isValidUid,
+    imo_number: isValidImoNumber,
     mmsi: isValidMmsi,
     ais_type: isValidAisType,
     mrn: isValidMcpMrn,
@@ -68,7 +70,7 @@ if (!user) {
         }
         const idToken = user.id_token;
         const idTokenSplit = idToken.split('.');
-        const id = JSON.parse(atob(idTokenSplit[1]));
+        const id = JSON.parse(b64DecodeUnicode(idTokenSplit[1]));
         claims.forEach(claim => {
             const claimValue = id[claim];
             const tableRow = document.getElementById(claim);
@@ -84,6 +86,10 @@ if (!user) {
 
 function isValidUid(uid) {
     return true;
+}
+
+function isValidImoNumber(imoNumber) {
+    return imoNumberPattern.test(imoNumber);
 }
 
 function isValidMmsi(mmsi) {
@@ -109,4 +115,12 @@ function isValidUrl(url) {
         return false;
     }
     return true;
+}
+
+// Function taken from https://stackoverflow.com/a/30106551
+function b64DecodeUnicode(str) {
+    // Going backwards: from bytestream, to percent-encoding, to original string.
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
 }
