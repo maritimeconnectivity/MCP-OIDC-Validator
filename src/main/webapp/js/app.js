@@ -1,10 +1,18 @@
 const mrnPattern = /^urn:mrn:([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):([a-z0-9][-a-z0-9]{0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)((\?\+((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?(\?=((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?)?(#(((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?$/i;
-const mcpMrnPattern = /^urn:mrn:mcp:(device|org|user|vessel|service|mms):([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)$/i;
+const mcpMrnPattern = /^urn:mrn:mcp:(device|org|user|vessel|service|mms|mir|msr):([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)$/i;
 const greenCheckMark = "\u2705";
 const redCheckMark = "\u274C";
 
+const oidcEndpointResponse = await fetch('/config/endpoint');
+let oidcEndpoint;
+if (oidcEndpointResponse.status === 200) {
+    oidcEndpoint = await oidcEndpointResponse.text();
+} else {
+    alert("The OIDC endpoint could not be fetched");
+}
+
 const config = {
-    authority: 'https://test-maritimeid.maritimeconnectivity.net/auth/realms/MCP',
+    authority: oidcEndpoint,
     client_id: 'validator',
     redirect_uri: window.location.origin + '/callback.html',
     response_type: 'code',
@@ -45,13 +53,14 @@ if (!user) {
         user = await userManager.getUser();
         const response = await fetch('/api/validate', {
             method: 'GET',
-            mode: 'cors',
             headers: {
                 'Authorization': 'Bearer ' + user.access_token
             }
         });
         if (response.status === 200) {
             alert(await response.text());
+        } else {
+            alert("Access token is not valid");
         }
         const idToken = user.id_token;
         const idTokenSplit = idToken.split('.');
