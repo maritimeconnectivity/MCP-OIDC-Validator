@@ -1,5 +1,7 @@
 const mrnPattern = /^urn:mrn:([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):([a-z0-9][-a-z0-9]{0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)((\?\+((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?(\?=((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?)?(#(((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/|\?)*))?$/i;
 const mcpMrnPattern = /^urn:mrn:mcp:(device|org|user|vessel|service|mms|mir|msr):([a-z0-9]([a-z0-9]|-){0,20}[a-z0-9]):((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)((([-._a-z0-9]|~)|%[0-9a-f][0-9a-f]|([!$&'()*+,;=])|:|@)|\/)*)$/i;
+const mmsiPattern = /^\d{9}$/;
+const aisTypePattern = /^[AB]$/;
 const greenCheckMark = "\u2705";
 const redCheckMark = "\u274C";
 
@@ -31,6 +33,8 @@ const claims = ["uid", "flagstate", "callsign", "imo_number", "mmsi", "ais_type"
 
 const validators = {
     uid: isValidUid,
+    mmsi: isValidMmsi,
+    ais_type: isValidAisType,
     mrn: isValidMcpMrn,
     ship_mrn: isValidMcpMrn,
     subsidiary_mrn: isValidMrn,
@@ -80,6 +84,14 @@ if (!user) {
 
 function isValidUid(uid) {
     return true;
+}
+
+function isValidMmsi(mmsi) {
+    return mmsiPattern.test(mmsi);
+}
+
+function isValidAisType(aisType) {
+    return aisTypePattern.test(aisType);
 }
 
 function isValidMrn(mrn) {
