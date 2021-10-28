@@ -46,6 +46,7 @@ const validators = {
 }
 
 let user = await userManager.getUser();
+let type;
 
 if (!user) {
     loginButton.addEventListener('click', () => userManager.signinRedirect());
@@ -86,7 +87,16 @@ if (!user) {
 }
 
 function isValidUid(uid) {
-    return true;
+    const uidSplit = uid.replace("\\,", "\\.").split(",").map(rdn => rdn.replace("\\.", "\\,").trim());
+    const rdnMap = uidSplit.reduce((o, rdn) => {
+        const split = rdn.split("=");
+        o[split[0].toUpperCase()] = split[1];
+        return o;
+    }, {});
+    type = rdnMap.OU;
+    if (!type)
+        return false;
+
 }
 
 function isValidImoNumber(imoNumber) {
