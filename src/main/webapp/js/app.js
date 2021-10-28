@@ -12,6 +12,7 @@ if (oidcEndpointResponse.status === 200) {
     oidcEndpoint = await oidcEndpointResponse.text();
 } else {
     alert("The OIDC endpoint could not be fetched");
+    throw new Error("The OIDC endpoint could not be fetched");
 }
 
 const config = {
