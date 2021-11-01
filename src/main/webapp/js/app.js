@@ -38,7 +38,8 @@ const validators = {
     imo_number: isValidImoNumber,
     mmsi: isValidMmsi,
     ais_type: isValidAisType,
-    mrn: isValidMcpMrn,
+    mrn: isValidPrimaryMrn,
+    permissions: isValidPermissions,
     ship_mrn: isValidMcpMrn,
     subsidiary_mrn: isValidMrn,
     mms_url: isValidUrl,
@@ -47,6 +48,7 @@ const validators = {
 
 let user = await userManager.getUser();
 let type;
+let uidRdn;
 
 if (!user) {
     loginButton.addEventListener('click', () => userManager.signinRedirect());
@@ -76,11 +78,10 @@ if (!user) {
         claims.forEach(claim => {
             const claimValue = id[claim];
             const tableRow = document.getElementById(claim);
-            if (claimValue) {
+            if (claimValue)
                 tableRow.cells[1].textContent = claimValue;
-                if (validators[claim]) {
-                    tableRow.cells[2].textContent = (validators[claim](claimValue) ? greenCheckMark : redCheckMark);
-                }
+            if (validators[claim]) {
+                tableRow.cells[2].textContent = (validators[claim](claimValue) ? greenCheckMark : redCheckMark);
             }
         });
     });
@@ -96,27 +97,39 @@ function isValidUid(uid) {
     type = rdnMap.OU;
     if (!type)
         return false;
+    uidRdn = rdnMap.UID;
+    if (!uidRdn)
+        return false;
 
+    return true;
 }
 
 function isValidImoNumber(imoNumber) {
-    return imoNumberPattern.test(imoNumber);
+    return imoNumber instanceof String && imoNumberPattern.test(imoNumber);
 }
 
 function isValidMmsi(mmsi) {
-    return mmsiPattern.test(mmsi);
+    return mmsi instanceof String && mmsiPattern.test(mmsi);
 }
 
 function isValidAisType(aisType) {
-    return aisTypePattern.test(aisType);
+    return aisType instanceof String && aisTypePattern.test(aisType);
 }
 
 function isValidMrn(mrn) {
-    return mrnPattern.test(mrn);
+    return mrn instanceof String && mrnPattern.test(mrn);
 }
 
 function isValidMcpMrn(mrn) {
     return mrnPattern.test(mrn) && mcpMrnPattern.test(mrn);
+}
+
+function isValidPrimaryMrn(mrn) {
+    return mrn === uidRdn && isValidMcpMrn(mrn);
+}
+
+function isValidPermissions(permissions) {
+    return permissions instanceof String;
 }
 
 function isValidUrl(url) {
