@@ -35,13 +35,16 @@ const claims = ["uid", "flagstate", "callsign", "imo_number", "mmsi", "ais_type"
 
 const validators = {
     uid: isValidUid,
+    flagstate: isValidFlagstate,
+    callsign: isValidCallsign,
     imo_number: isValidImoNumber,
     mmsi: isValidMmsi,
     ais_type: isValidAisType,
+    registered_port: isValidRegisteredPort,
+    ship_mrn: isValidShipMrn,
     mrn: isValidPrimaryMrn,
     permissions: isValidPermissions,
-    ship_mrn: isValidMcpMrn,
-    subsidiary_mrn: isValidMrn,
+    subsidiary_mrn: isValidSubsidiaryMrn,
     mms_url: isValidUrl,
     url: isValidUrl
 }
@@ -75,13 +78,14 @@ if (!user) {
         const idToken = user.id_token;
         const idTokenSplit = idToken.split('.');
         const id = JSON.parse(b64DecodeUnicode(idTokenSplit[1]));
+        console.log(id);
         claims.forEach(claim => {
             const claimValue = id[claim];
             const tableRow = document.getElementById(claim);
             if (claimValue)
                 tableRow.cells[1].textContent = claimValue;
             if (validators[claim]) {
-                tableRow.cells[2].textContent = (validators[claim](claimValue) ? greenCheckMark : redCheckMark);
+                tableRow.cells[2].textContent = validators[claim](claimValue);
             }
         });
     });
@@ -95,53 +99,106 @@ function isValidUid(uid) {
         return o;
     }, {});
 
-    type = rdnMap.OU;
+    type = rdnMap.OU.toLowerCase();
     if (!type)
-        return false;
+        return redCheckMark;
 
     uidRdn = rdnMap.UID;
     if (!uidRdn)
-        return false;
+        return redCheckMark;
 
 
-    return true;
+    return greenCheckMark;
+}
+
+function isValidFlagstate(flagstate) {
+    if (["vessel", "service"].includes(type)) {
+        return flagstate instanceof String ? greenCheckMark : redCheckMark;
+    }
+    return "";
+}
+
+function isValidCallsign(callsign) {
+    if (["vessel", "service"].includes(type)) {
+        return callsign instanceof String ? greenCheckMark : redCheckMark;
+    }
+    return "";
 }
 
 function isValidImoNumber(imoNumber) {
-    return imoNumber instanceof String && imoNumberPattern.test(imoNumber);
+    if (["vessel", "service"].includes(type)) {
+        return imoNumberPattern.test(imoNumber) ? greenCheckMark : redCheckMark;
+    }
+    return "";
 }
 
 function isValidMmsi(mmsi) {
-    return mmsi instanceof String && mmsiPattern.test(mmsi);
+    if (["vessel", "service"].includes(type)) {
+        return mmsiPattern.test(mmsi) ? greenCheckMark : redCheckMark;
+    }
+    return "";
 }
 
 function isValidAisType(aisType) {
-    return aisType instanceof String && aisTypePattern.test(aisType);
+    if (["vessel", "service"].includes(type)) {
+        return (aisTypePattern.test(aisType)) ? greenCheckMark : redCheckMark;
+    }
+    return "";
+}
+
+function isValidRegisteredPort(registeredPort) {
+    if (registeredPort && ["vessel", "service"].includes(type)) {
+        return registeredPort instanceof String ? greenCheckMark : redCheckMark;
+    }
+    return "";
+}
+
+function isValidShipMrn(shipMrn) {
+    if (shipMrn && ["vessel", "service"].includes(type)) {
+        return shipMrn instanceof String ? greenCheckMark : redCheckMark;
+    }
+    return "";
 }
 
 function isValidMrn(mrn) {
-    return mrn instanceof String && mrnPattern.test(mrn);
-}
-
-function isValidMcpMrn(mrn) {
-    return mrnPattern.test(mrn) && mcpMrnPattern.test(mrn);
-}
-
-function isValidPrimaryMrn(mrn) {
-    return mrn === uidRdn && isValidMcpMrn(mrn);
+    return (mrn instanceof String && mrnPattern.test(mrn)) ? greenCheckMark : redCheckMark;
 }
 
 function isValidPermissions(permissions) {
-    return permissions instanceof String;
+    if (permissions) {
+        return (permissions instanceof String || permissions instanceof Array) ? greenCheckMark : redCheckMark;
+    }
+    return "";
+}
+
+function isValidSubsidiaryMrn(subsidiaryMrn) {
+    if (subsidiaryMrn) {
+        return isValidMrn(subsidiaryMrn);
+    }
+    return "";
+}
+
+function isValidMcpMrn(mrn) {
+    return (mrnPattern.test(mrn) && mcpMrnPattern.test(mrn)) ? greenCheckMark : redCheckMark;
+}
+
+function isValidPrimaryMrn(mrn) {
+    if (mrn === uidRdn) {
+        return isValidMcpMrn(mrn);
+    }
+    return redCheckMark;
 }
 
 function isValidUrl(url) {
-    try {
-        new URL(url);
-    } catch (e) {
-        return false;
+    if (url) {
+        try {
+            new URL(url);
+        } catch (e) {
+            return redCheckMark;
+        }
+        return greenCheckMark;
     }
-    return true;
+    return "";
 }
 
 // Function taken from https://stackoverflow.com/a/30106551
