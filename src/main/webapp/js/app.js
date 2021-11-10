@@ -94,12 +94,15 @@ function isValidUid(uid) {
         o[split[0].toUpperCase()] = split[1];
         return o;
     }, {});
+
     type = rdnMap.OU;
     if (!type)
         return false;
+
     uidRdn = rdnMap.UID;
     if (!uidRdn)
         return false;
+
 
     return true;
 }
@@ -144,7 +147,7 @@ function isValidUrl(url) {
 // Function taken from https://stackoverflow.com/a/30106551
 function b64DecodeUnicode(str) {
     // Going backwards: from bytestream, to percent-encoding, to original string.
-    return decodeURIComponent(atob(str).split('').map(function(c) {
+    return decodeURIComponent(atob(str).split('').map(c => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
 }
