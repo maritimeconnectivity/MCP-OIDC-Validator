@@ -104,9 +104,21 @@ function isValidUid(uid) {
         return redCheckMark;
 
     uidRdn = rdnMap.UID;
-    if (!uidRdn)
+    if (!uidRdn || !isValidMcpMrn(uid))
         return redCheckMark;
 
+    const orgMrn = rdnMap.O;
+    if (!isValidMcpMrn(orgMrn))
+        return redCheckMark;
+
+    const mrnSplit = uidRdn.split(":");
+    const orgMrnSplit = orgMrn.split(":");
+    if (mrnSplit[4] !== orgMrnSplit[4]) // Check that user mrn and the mrn of its org has the same IPSS
+        return redCheckMark;
+
+    const email = rdnMap.E;
+    if (email && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) // if there is an email address we check that is valid
+        return redCheckMark;
 
     return greenCheckMark;
 }
