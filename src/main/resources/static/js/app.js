@@ -78,7 +78,6 @@ if (!user) {
         const idToken = user.id_token;
         const idTokenSplit = idToken.split('.');
         const id = JSON.parse(b64DecodeUnicode(idTokenSplit[1]));
-        console.log(id);
         claims.forEach(claim => {
             const claimValue = id[claim];
             const tableRow = document.getElementById(claim);
