@@ -116,7 +116,7 @@ function isValidUid(uid) {
         return redCheckMark;
 
     const email = rdnMap.E;
-    if (email && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) // if there is an email address we check that is valid
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) // if there is an email address we check that is valid
         return redCheckMark;
 
     return greenCheckMark;
