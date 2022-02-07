@@ -103,7 +103,7 @@ function isValidUid(uid) {
         return redCheckMark;
 
     uidRdn = rdnMap.UID;
-    if (!uidRdn || !isValidMcpMrn(uid))
+    if (!uidRdn || !isValidMcpMrn(uidRdn))
         return redCheckMark;
 
     const orgMrn = rdnMap.O;
