@@ -123,35 +123,35 @@ function isValidUid(uid) {
 }
 
 function isValidFlagstate(flagstate) {
-    if (["vessel", "service"].includes(type)) {
-        return flagstate instanceof String ? greenCheckMark : redCheckMark;
+    if (flagstate && ["vessel", "service"].includes(type)) {
+        return (typeof flagstate === 'string') ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidCallsign(callsign) {
-    if (["vessel", "service"].includes(type)) {
-        return callsign instanceof String ? greenCheckMark : redCheckMark;
+    if (callsign && ["vessel", "service"].includes(type)) {
+        return (typeof callsign === 'string') ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidImoNumber(imoNumber) {
-    if (["vessel", "service"].includes(type)) {
+    if (imoNumber && ["vessel", "service"].includes(type)) {
         return imoNumberPattern.test(imoNumber) ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidMmsi(mmsi) {
-    if (["vessel", "service"].includes(type)) {
+    if (mmsi && ["vessel", "service"].includes(type)) {
         return mmsiPattern.test(mmsi) ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidAisType(aisType) {
-    if (["vessel", "service"].includes(type)) {
+    if (aisType && ["vessel", "service"].includes(type)) {
         return (aisTypePattern.test(aisType)) ? greenCheckMark : redCheckMark;
     }
     return "";
@@ -159,25 +159,25 @@ function isValidAisType(aisType) {
 
 function isValidRegisteredPort(registeredPort) {
     if (registeredPort && ["vessel", "service"].includes(type)) {
-        return registeredPort instanceof String ? greenCheckMark : redCheckMark;
+        return (typeof registeredPort === 'string') ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidShipMrn(shipMrn) {
     if (shipMrn && ["vessel", "service"].includes(type)) {
-        return shipMrn instanceof String ? greenCheckMark : redCheckMark;
+        return isValidMcpMrn(shipMrn) ? greenCheckMark : redCheckMark;
     }
     return "";
 }
 
 function isValidMrn(mrn) {
-    return (mrn instanceof String && mrnPattern.test(mrn)) ? greenCheckMark : redCheckMark;
+    return ((typeof mrn === 'string') && mrnPattern.test(mrn)) ? greenCheckMark : redCheckMark;
 }
 
 function isValidPermissions(permissions) {
     if (permissions) {
-        return (permissions instanceof String || permissions instanceof Array) ? greenCheckMark : redCheckMark;
+        return ((typeof permissions === 'string') || permissions instanceof Array) ? greenCheckMark : redCheckMark;
     }
     return "";
 }
